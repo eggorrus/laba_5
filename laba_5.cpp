@@ -103,7 +103,7 @@ bool pass(double N) {
 
 
 
-void final_output(int nums_of_gr, string a[], int b[], int badcount[]) {
+void conform(int nums_of_gr, string a[], int b[], int badcount[]) {
 	for (int i = 0; i < nums_of_gr - 1; ++i) {
 		for (int j = 0; j < nums_of_gr - i - 1; ++j) {
 			if (badcount[j] < badcount[j + 1]) {
@@ -113,6 +113,9 @@ void final_output(int nums_of_gr, string a[], int b[], int badcount[]) {
 			}
 		}
 	}
+}
+
+void final_output(int nums_of_gr, string a[], int b[], int badcount[]){
 	for (int i = 0; i < nums_of_gr; i++) {
 		cout << a[i] << " - " << b[i] << " - " << badcount[i] << endl;
 	}
@@ -198,7 +201,7 @@ void table2(STUDENT students[], int good_st, double averages[]) {
 	cout << setw(70) << "=====================================================================" << endl;
 	cout << "||" << "# группы |" << " ФИО студента" << setw(25) << " |" << "Средний балл" << setw(8) << "||" << endl;
 	cout << setw(70) << "_____________________________________________________________________" << endl;
-	for (int i = 0; i < good_st; i++) {
+	for (int i = 0; i < good_st-1; i++) {
 		cout << "||" << students[i].group << setw(6) << "|";
 		cout << students[i].surname << " ";
 		cout << students[i].name << " ";
@@ -207,7 +210,26 @@ void table2(STUDENT students[], int good_st, double averages[]) {
 		a = to_string(averages[i]);
 		cout << setw(18 - size(a)) << "||" << endl;
 	}
+	cout << "||" << students[good_st-1].group << setw(6) << "|";
+	cout << students[good_st - 1].surname << " ";
+	cout << students[good_st - 1].name << " ";
+	cout << students[good_st-1].dad_name << setw(39 - size(students[good_st-1].name) - size(students[good_st - 1].surname) - size(students[good_st - 1].dad_name) - 3);
+	cout << "|" << setw(10) << averages[good_st - 1];
+	a = to_string(averages[good_st - 1]);
+	cout << setw(18 - size(a)) << "||" << endl;
 	cout << setw(70) << "=====================================================================" << endl;
+}
+
+void table3(int nums_of_gr, string a[], int b[], int badcount[]) {
+	cout << setw(30) <<"Статистика групп" << endl;
+	cout << setw(50) << "==================================================" << endl;
+	cout << "||" << "# группы " << "|" << "Кол-во студентов " << "|" << "Кол-во двоечников " << "||" << endl;
+	cout << setw(50) << "__________________________________________________" << endl;
+	for (int i = 0; i < nums_of_gr - 1; i++) {
+		cout << "||" << setw(6) << a[i] << setw(4) << "|" << setw(9) << b[i] << setw(9) << "|" << setw(10) << badcount[i] << setw(10) << "||" << endl;
+	}
+	cout << "||" << setw(6) << a[nums_of_gr - 1] << setw(4) << "|" << setw(9) << b[nums_of_gr - 1] << setw(9) << "|" << setw(10) << badcount[nums_of_gr - 1] << setw(10) << "||" << endl;
+	cout << setw(50) << "==================================================" << endl;
 }
 
 int main(int argc, char* argv[])
@@ -261,7 +283,9 @@ int main(int argc, char* argv[])
 	arr_to_null1(badcount, nums_of_gr);
 	arr_to_null1(b, nums_of_gr);
 	counting_groups(nums_of_gr, students, a, b, badcount, N);
-	final_output(nums_of_gr, a, b, badcount);
+	conform(nums_of_gr, a, b, badcount);
+	if (is_human) table3(nums_of_gr, a, b, badcount);
+	else final_output(nums_of_gr, a, b, badcount);
 	delete[] a;
 	delete[] b;
 	delete[] badcount;
