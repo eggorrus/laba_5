@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 #include <Windows.h>
 #include <string.h>
@@ -7,14 +7,13 @@
 using namespace std;
 
 const int marks = 5;
-const int quantity_of_students = 100;
 
 struct STUDENT
 {
 	string surname;
 	string name;
 	string dad_name;
-	int group;
+	string group;
 	int marks[marks];
 };
 
@@ -104,7 +103,7 @@ bool pass(double N) {
 
 
 
-void final_output(int nums_of_gr, int a[], int b[], int badcount[]) {
+void final_output(int nums_of_gr, string a[], int b[], int badcount[]) {
 	for (int i = 0; i < nums_of_gr - 1; ++i) {
 		for (int j = 0; j < nums_of_gr - i - 1; ++j) {
 			if (badcount[j] < badcount[j + 1]) {
@@ -119,7 +118,7 @@ void final_output(int nums_of_gr, int a[], int b[], int badcount[]) {
 	}
 }
 
-void counting_groups(int nums_of_gr, STUDENT students[], int a[], int b[], int badcount[], int N) {
+void counting_groups(int nums_of_gr, STUDENT students[], string a[], int b[], int badcount[], int N) {
 	for (int i = 0; i < nums_of_gr; i++) {
 		for (int j = 0; j < N; j++) {
 			if (students[j].group == a[i]) {
@@ -130,13 +129,20 @@ void counting_groups(int nums_of_gr, STUDENT students[], int a[], int b[], int b
 	}
 }
 
-void arr_to_null(int a[], int n) {
+void arr_to_null(string a[], int n) {
+	for (int i = 0; i < n; i++) {
+		a[i] = "0";
+	}
+}
+
+void arr_to_null1(int a[], int n) {
 	for (int i = 0; i < n; i++) {
 		a[i] = 0;
 	}
 }
 
-void uniq_search(STUDENT students[], int N, int nums_of_gr, int a[]) {
+
+void uniq_search(STUDENT students[], int N, int nums_of_gr, string a[]) {
 	int k = 0;
 	for (int i = 0; i < N; i++) {
 		for (int j = i + 1; j < N; j++) {
@@ -144,7 +150,7 @@ void uniq_search(STUDENT students[], int N, int nums_of_gr, int a[]) {
 		}
 		if (k == 0) {
 			for (int b = 0; b < nums_of_gr; b++) {
-				if (a[b] == 0) {
+				if (a[b] == to_string(0)) {
 					a[b] = students[i].group;
 					break;
 				}
@@ -212,19 +218,21 @@ int main(int argc, char* argv[])
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	int N;
-	STUDENT students[quantity_of_students];
+	STUDENT* students;
 	cin >> N;
+	students = new STUDENT[N];
 	input_students(students, N);
 	sort_students(students, N);
 	if (is_human) table1(students, N);
 	else output_students1(students, N);
-	STUDENT good[quantity_of_students];
-	to_null(good, quantity_of_students);
+	STUDENT* good;
+	good = new STUDENT[N];
+	to_null(good, N);
 	int good_st = 0;
 	for (int i = 0; i < N; i++) {
 		if (average_mark(students[i].marks, marks) >= 4.0) {
 			good_st += 1;
-			for (int j = 0; j < quantity_of_students; j++) {
+			for (int j = 0; j < N; j++) {
 				if (good[j].surname == "no_name") {
 					good[j] = equal(students[i], good[j], marks);
 					break;
@@ -243,18 +251,20 @@ int main(int argc, char* argv[])
 	else output_students2(good, good_st, averages);
 	delete[] averages;
 	int nums_of_gr = num_of_gr(students, N);
-	int* a;
-	a = new int[nums_of_gr];
+	string* a;
+	a = new string[nums_of_gr];
 	arr_to_null(a, nums_of_gr);
 	uniq_search(students, N, nums_of_gr, a);
 	int* b, *badcount;
 	b = new int[nums_of_gr];
 	badcount = new int[nums_of_gr];
-	arr_to_null(badcount, nums_of_gr);
-	arr_to_null(b, nums_of_gr);
+	arr_to_null1(badcount, nums_of_gr);
+	arr_to_null1(b, nums_of_gr);
 	counting_groups(nums_of_gr, students, a, b, badcount, N);
 	final_output(nums_of_gr, a, b, badcount);
 	delete[] a;
 	delete[] b;
 	delete[] badcount;
+	delete[] students;
+	delete[] good;
 }
