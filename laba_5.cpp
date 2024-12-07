@@ -30,9 +30,9 @@ void output_students1(STUDENT a[], int N) {
 		cout << a[i].group << " - ";
 		cout << a[i].surname << " ";
 		cout << a[i].name << " ";
-		cout << a[i].dad_name << " - ";
+		cout << a[i].dad_name << ": ";
 		for (int j = 0; j < marks - 1; j++) {
-			cout << a[i].marks[j] << " ";
+			cout << a[i].marks[j] << ", ";
 		}
 		cout << a[i].marks[marks - 1] << endl;
 	}
