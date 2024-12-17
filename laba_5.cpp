@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include <Windows.h>
 #include <string.h>
@@ -117,12 +117,6 @@ int num_of_gr(STUDENT a[], int N) {
 	return num;
 }
 
-bool pass(double N) {
-	if (N >= 4.0) return true;
-	else return false;
-}
-
-
 
 void conform(int nums_of_gr, string a[], int b[], int badcount[]) {
 	for (int i = 0; i < nums_of_gr - 1; ++i) {
@@ -139,17 +133,6 @@ void conform(int nums_of_gr, string a[], int b[], int badcount[]) {
 void final_output(int nums_of_gr, string a[], int b[], int badcount[]){
 	for (int i = 0; i < nums_of_gr; i++) {
 		cout << a[i] << " - " << b[i] << " - " << badcount[i] << endl;
-	}
-}
-
-void counting_groups(int nums_of_gr, STUDENT students[], string a[], int b[], int badcount[], int N) {
-	for (int i = 0; i < nums_of_gr; i++) {
-		for (int j = 0; j < N; j++) {
-			if (students[j].group == a[i]) {
-				b[i]++;
-				if (!pass(average_mark(students[j].marks, marks))) badcount[i]++;
-			}
-		}
 	}
 }
 
@@ -192,6 +175,25 @@ void input_students(STUDENT students[], int N) {
 		cin >> students[i].group;
 		for (int j = 0; j < marks; j++) {
 			cin >> students[i].marks[j];
+		}
+	}
+}
+
+bool badmark_search(STUDENT students) {
+	for (int i = 0; i < marks; i++) {
+		if (students.marks[i] == 2)
+			return true;
+	}
+	return false;
+}
+
+void counting_groups(int nums_of_gr, STUDENT students[], string a[], int b[], int badcount[], int N) {
+	for (int i = 0; i < nums_of_gr; i++) {
+		for (int j = 0; j < N; j++) {
+			if (students[j].group == a[i]) {
+				b[i]++;
+				if (badmark_search(students[j])) badcount[i]++;
+			}
 		}
 	}
 }
@@ -283,17 +285,17 @@ int main(int argc, char* argv[])
 	a = new string[nums_of_gr];
 	arr_to_null(a, nums_of_gr);
 	uniq_search(students, N, nums_of_gr, a);
-	int* b, *badcount;
-	b = new int[nums_of_gr];
+	int* q_of_st, *badcount;
+	q_of_st = new int[nums_of_gr];
 	badcount = new int[nums_of_gr];
 	arr_to_null1(badcount, nums_of_gr);
-	arr_to_null1(b, nums_of_gr);
-	counting_groups(nums_of_gr, students, a, b, badcount, N);
-	conform(nums_of_gr, a, b, badcount);
-	if (is_human) table3(nums_of_gr, a, b, badcount);
-	else final_output(nums_of_gr, a, b, badcount);
+	arr_to_null1(q_of_st, nums_of_gr);
+	counting_groups(nums_of_gr, students, a, q_of_st, badcount, N);
+	conform(nums_of_gr, a, q_of_st, badcount);
+	if (is_human) table3(nums_of_gr, a, q_of_st, badcount);
+	else final_output(nums_of_gr, a, q_of_st, badcount);
 	delete[] a;
-	delete[] b;
+	delete[] q_of_st;
 	delete[] badcount;
 	delete[] students;
 	delete[] good;
