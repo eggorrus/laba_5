@@ -240,6 +240,11 @@ void table3(int nums_of_gr, string a[], int b[], int badcount[]) {
 	cout << setw(50) << "==================================================" << endl;
 }
 
+bool is_good(STUDENT student) {
+	if (average_mark(student.marks, marks) >= 4.0) return true;
+	else return false;
+}
+
 int main(int argc, char* argv[])
 {
 	bool is_human = false;
@@ -259,8 +264,9 @@ int main(int argc, char* argv[])
 	good = new STUDENT[N];
 	to_null(good, N);
 	int good_st = 0;
+	int bad = 0;
 	for (int i = 0; i < N; i++) {
-		if (average_mark(students[i].marks, marks) >= 4.0) {
+		if (is_good(students[i])) {
 			good_st += 1;
 			for (int j = 0; j < N; j++) {
 				if (good[j].surname == "no_name") {
@@ -269,17 +275,25 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
-		else continue;
+		else {
+			bad++;
+		}
 	}
-	double* averages;
-	averages = new double[good_st];
-	for (int i = 0; i < good_st; i++) {
-		averages[i] = average_mark(good[i].marks, marks);
+	if (bad != N) {
+		double* averages;
+		averages = new double[good_st];
+		for (int i = 0; i < good_st; i++) {
+			averages[i] = average_mark(good[i].marks, marks);
+		}
+		sort_average(good, averages, good_st);
+		if (is_human) table2(good, good_st, averages, N);
+		else output_students2(good, good_st, averages);
+		delete[] averages;
 	}
-	sort_average(good, averages, good_st);
-	if (is_human) table2(good, good_st, averages, N);
-	else output_students2(good, good_st, averages);
-	delete[] averages;
+	else {
+		if (is_human) cout << "Студентов с баллом выше 4.0 нет." << endl;
+		else cout << "NO" << endl;
+	}
 	int nums_of_gr = num_of_gr(students, N);
 	string* a;
 	a = new string[nums_of_gr];
