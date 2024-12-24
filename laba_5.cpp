@@ -254,7 +254,7 @@ void table3(int nums_of_gr, string a[], int b[], int badcount[]) {
 }
 
 bool is_good(STUDENT student) {
-	if (average_mark(student.marks, marks) >= 4.0) return true;
+	if (average_mark(student.marks, marks) > 4.0) return true;
 	else return false;
 }
 
