@@ -18,6 +18,13 @@ struct STUDENT
 	int marks[marks];
 };
 
+struct group_stats
+{
+	string group_num;
+	int badcount;
+	int count;
+};
+
 int get_max_length(STUDENT students[], int N, int command) {
 	int* symbols = new int[N];
 	int maximum, sum=0;
@@ -118,38 +125,37 @@ int num_of_gr(STUDENT a[], int N) {
 }
 
 
-void conform(int nums_of_gr, string a[], int b[], int badcount[]) {
+void conform(int nums_of_gr, group_stats groups[]) {
 	for (int i = 0; i < nums_of_gr - 1; ++i) {
 		for (int j = 0; j < nums_of_gr - i - 1; ++j) {
-			if (badcount[j] < badcount[j + 1]) {
-				swap(badcount[j], badcount[j + 1]);
-				swap(a[j], a[j + 1]);
-				swap(b[j], b[j + 1]);
+			if (groups[j].badcount < groups[j+1].badcount) {
+				swap(groups[j], groups[j + 1]);
 			}
 		}
 	}
 }
 
-void final_output(int nums_of_gr, string a[], int b[], int badcount[]){
+void final_output(int nums_of_gr, group_stats group[]) {
 	for (int i = 0; i < nums_of_gr; i++) {
-		cout << a[i] << " - " << b[i] << " - " << badcount[i] << endl;
+		cout << group[i].group_num << " - " << group[i].count << " - " << group[i].badcount << endl;
 	}
 }
 
-void arr_to_null(string a[], int n) {
+void arr_to_null(group_stats a[], int n) {
 	for (int i = 0; i < n; i++) {
-		a[i] = "0";
+		a[i].group_num = "0";
 	}
 }
 
-void arr_to_null1(int a[], int n) {
+void arr_to_null1(group_stats groups[], int n) {
 	for (int i = 0; i < n; i++) {
-		a[i] = 0;
+		groups[i].count = 0;
+		groups[i].badcount = 0;
 	}
 }
 
 
-void uniq_search(STUDENT students[], int N, int nums_of_gr, string a[]) {
+void uniq_search(STUDENT students[], int N, int nums_of_gr, group_stats group[]) {
 	int k = 0;
 	for (int i = 0; i < N; i++) {
 		for (int j = i + 1; j < N; j++) {
@@ -157,8 +163,8 @@ void uniq_search(STUDENT students[], int N, int nums_of_gr, string a[]) {
 		}
 		if (k == 0) {
 			for (int b = 0; b < nums_of_gr; b++) {
-				if (a[b] == to_string(0)) {
-					a[b] = students[i].group;
+				if (group[b].group_num == to_string(0)) {
+					group[b].group_num = students[i].group;
 					break;
 				}
 			}
@@ -187,12 +193,12 @@ bool badmark_search(STUDENT students) {
 	return false;
 }
 
-void counting_groups(int nums_of_gr, STUDENT students[], string a[], int b[], int badcount[], int N) {
+void counting_groups(int nums_of_gr, STUDENT students[], group_stats groups[], int N) {
 	for (int i = 0; i < nums_of_gr; i++) {
 		for (int j = 0; j < N; j++) {
-			if (students[j].group == a[i]) {
-				b[i]++;
-				if (badmark_search(students[j])) badcount[i]++;
+			if (students[j].group == groups[i].group_num) {
+				groups[i].count++;
+				if (badmark_search(students[j])) groups[i].badcount++;
 			}
 		}
 	}
@@ -241,15 +247,15 @@ void table2(STUDENT students[], int good_st, double averages[], int N) {
 	cout << setfill('=') << setw(get_max_length(students, N, 1) + get_max_length(students, N, 2) + 20) << "=" << endl<<""<<setfill(' ');
 }
 
-void table3(int nums_of_gr, string a[], int b[], int badcount[]) {
+void table3(int nums_of_gr, group_stats groups[]) {
 	cout << setw(30) <<"Статистика групп" << endl;
 	cout << setw(50) << "==================================================" << endl;
 	cout << "||" << "# группы " << "|" << "Кол-во студентов " << "|" << "Кол-во двоечников " << "||" << endl;
 	cout << setw(50) << "__________________________________________________" << endl;
 	for (int i = 0; i < nums_of_gr - 1; i++) {
-		cout << "||" << setw(6) << a[i] << setw(4) << "|" << setw(9) << b[i] << setw(9) << "|" << setw(10) << badcount[i] << setw(10) << "||" << endl;
+		cout << "||" << setw(6) << groups[i].group_num << setw(4) << "|" << setw(9) << groups[i].count << setw(9) << "|" << setw(10) << groups[i].badcount << setw(10) << "||" << endl;
 	}
-	cout << "||" << setw(6) << a[nums_of_gr - 1] << setw(4) << "|" << setw(9) << b[nums_of_gr - 1] << setw(9) << "|" << setw(10) << badcount[nums_of_gr - 1] << setw(10) << "||" << endl;
+	cout << "||" << setw(6) << groups[nums_of_gr - 1].group_num << setw(4) << "|" << setw(9) << groups[nums_of_gr - 1].count << setw(9) << "|" << setw(10) << groups[nums_of_gr - 1].badcount << setw(10) << "||" << endl;
 	cout << setw(50) << "==================================================" << endl;
 }
 
@@ -308,22 +314,15 @@ int main(int argc, char* argv[])
 		else cout << "NO" << endl;
 	}
 	int nums_of_gr = num_of_gr(students, N);
-	string* a;
-	a = new string[nums_of_gr];
-	arr_to_null(a, nums_of_gr);
-	uniq_search(students, N, nums_of_gr, a);
-	int* q_of_st, *badcount;
-	q_of_st = new int[nums_of_gr];
-	badcount = new int[nums_of_gr];
-	arr_to_null1(badcount, nums_of_gr);
-	arr_to_null1(q_of_st, nums_of_gr);
-	counting_groups(nums_of_gr, students, a, q_of_st, badcount, N);
-	conform(nums_of_gr, a, q_of_st, badcount);
-	if (is_human) table3(nums_of_gr, a, q_of_st, badcount);
-	else final_output(nums_of_gr, a, q_of_st, badcount);
-	delete[] a;
-	delete[] q_of_st;
-	delete[] badcount;
+	group_stats* groups = new group_stats[nums_of_gr];
+	arr_to_null(groups, nums_of_gr);
+	uniq_search(students, N, nums_of_gr, groups);
+	arr_to_null1(groups, nums_of_gr);
+	counting_groups(nums_of_gr, students, groups, N);
+	conform(nums_of_gr, groups);
+	if (is_human) table3(nums_of_gr, groups);
+	else final_output(nums_of_gr, groups);
+	delete[] groups;
 	delete[] students;
 	delete[] good;
 }
