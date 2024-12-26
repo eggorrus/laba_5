@@ -25,6 +25,15 @@ struct group_stats
 	int count;
 };
 
+struct good_stud
+{
+	string surname;
+	string name;
+	string dad_name;
+	string group;
+	double average;
+};
+
 int get_max_length(STUDENT students[], int N, int command) {
 	int* symbols = new int[N];
 	int maximum, sum=0;
@@ -41,6 +50,26 @@ int get_max_length(STUDENT students[], int N, int command) {
 					maximum = symbols[i];
 			}
 		}
+	delete[] symbols;
+	return maximum;
+}
+
+int get_max_length2(good_stud students[], int N, int command) {
+	int* symbols = new int[N];
+	int maximum, sum = 0;
+	for (int i = 0; i < N; i++) {
+		if (command == 1)
+			symbols[i] = students[i].name.length() + students[i].surname.length() + students[i].dad_name.length() + 2;
+		else if (command == 2)
+			symbols[i] = students[i].group.length() + 2;
+	}
+	for (int i = 0; i < N; i++) {
+		if (i == 0) maximum = symbols[i];
+		else {
+			if (symbols[i] > maximum)
+				maximum = symbols[i];
+		}
+	}
 	delete[] symbols;
 	return maximum;
 }
@@ -66,13 +95,13 @@ void output_students1(STUDENT a[], int N) {
 	}
 }
 
-void output_students2(STUDENT a[], int N, double average[]) {
+void output_students2(good_stud good[], int N) {
 	for (int i = 0; i < N; i++) {
-		cout << a[i].group << ", ";
-		cout << a[i].surname << " ";
-		cout << a[i].name << " ";
-		cout << a[i].dad_name << " - ";
-		cout << average[i] << endl;
+		cout << good[i].group << ", ";
+		cout << good[i].surname << " ";
+		cout << good[i].name << " ";
+		cout << good[i].dad_name << " - ";
+		cout << good[i].average << endl;
 	}
 }
 
@@ -84,7 +113,16 @@ void sort_students(STUDENT a[], int N) {
 	}
 }
 
-void sort_average(STUDENT a[], double b[], int quantity) {
+void sort_average(good_stud good[], int num) {
+	for (int i = 0; i < num - 1; i++) {
+		for (int j = 0; j < num - i - 1; j++) {
+			if (good[j].average < good[j + 1].average)
+				swap(good[j], good[j + 1]);
+		}
+	}
+}
+
+/*void sort_average(STUDENT a[], double b[], int quantity) {
 	for (int i = 0; i < quantity - 1; ++i) {
 		for (int j = 0; j < quantity - i - 1; ++j) {
 			if (b[j] < b[j + 1]) {
@@ -93,7 +131,7 @@ void sort_average(STUDENT a[], double b[], int quantity) {
 			}
 		}
 	}
-}
+}*/
 
 static void to_null(STUDENT base[], int quantity) {
 	for (int i = 0; i < quantity; i++) {
@@ -154,6 +192,19 @@ void arr_to_null1(group_stats groups[], int n) {
 	}
 }
 
+void student_to_good(int good, STUDENT student[], good_stud goods[]) {
+	for (int i = 0; i < good; i++) {
+		goods[i].group = student[i].group;
+		goods[i].name = student[i].name;
+		goods[i].surname = student[i].surname;
+		goods[i].dad_name = student[i].dad_name;
+		double sum=0;
+		for (int j = 0; j < marks; j++) {
+			sum += student[i].marks[j];
+		}
+		goods[i].average = sum / marks;
+	}
+}
 
 void uniq_search(STUDENT students[], int N, int nums_of_gr, group_stats group[]) {
 	int k = 0;
@@ -225,26 +276,26 @@ void table1(STUDENT students[], int N) {
 	cout << setfill('=') << setw(get_max_length(students, N, 1) + get_max_length(students, N, 2) + 27) << "=" << endl << "" << setfill(' ');
 }
 
-void table2(STUDENT students[], int good_st, double averages[], int N) {
+void table2(good_stud good[], int good_st, int N) {
 	cout <<setw(30)<< "Список хорошистов" << endl;
-	cout << setfill('=') << setw(get_max_length(students, N, 1) + get_max_length(students, N, 2) + 20) << "=" << endl;
-	cout << "" << setfill(' ') << "||" << setw((get_max_length(students, N, 2) / 2) + 4) << "# группы" << setw((get_max_length(students, N, 2) / 2) + 1) << "||" << setw((get_max_length(students, N, 1) / 2) + 1) << "ФИО";
-	cout << setw((get_max_length(students, N, 1) / 2) + 2) << "||" << "Ср.балл" << setw(3) << "||" << endl;
+	cout << setfill('=') << setw(get_max_length2(good, N, 1) + get_max_length2(good, N, 2) + 20) << "=" << endl;
+	cout << "" << setfill(' ') << "||" << setw((get_max_length2(good, N, 2) / 2) + 4) << "# группы" << setw((get_max_length2(good, N, 2) / 2) + 1) << "||" << setw((get_max_length2(good, N, 1) / 2) + 1) << "ФИО";
+	cout << setw((get_max_length2(good, N, 1) / 2) + 2) << "||" << "Ср.балл" << setw(3) << "||" << endl;
 	for (int i = 0; i < good_st-1; i++) {
-		cout << "||" << setw((get_max_length(students, N, 2) / 2) + 4) << students[i].group << setw((get_max_length(students, N, 2) / 2) + 2) << "||";
-		cout << students[i].surname << " ";
-		cout << students[i].name << " ";
-		cout << students[i].dad_name << setw(get_max_length(students, N, 1) - students[i].surname.length() - students[i].name.length() - students[i].dad_name.length()) << "||";
-		cout << setw(7) << averages[i];
+		cout << "||" << setw((get_max_length2(good, N, 2) / 2) + 4) << good[i].group << setw((get_max_length2(good, N, 2) / 2) + 2) << "||";
+		cout << good[i].surname << " ";
+		cout << good[i].name << " ";
+		cout << good[i].dad_name << setw(get_max_length2(good, N, 1) - good[i].surname.length() - good[i].name.length() - good[i].dad_name.length()) << "||";
+		cout << setw(7) << good[i].average;
 		cout << setw(3) << "||" << endl;
 	}
-	cout << "||" << setw((get_max_length(students, N, 2) / 2) + 4) << students[good_st - 1].group << setw((get_max_length(students, N, 2) / 2) + 2) << "||";
-	cout << students[good_st-1].surname << " ";
-	cout << students[good_st - 1].name << " ";
-	cout << students[good_st - 1].dad_name << setw(get_max_length(students, N, 1) - students[good_st - 1].surname.length() - students[good_st - 1].name.length() - students[good_st - 1].dad_name.length()) << "||";
-	cout << setw(7) << averages[good_st - 1];
+	cout << "||" << setw((get_max_length2(good, N, 2) / 2) + 4) << good[good_st - 1].group << setw((get_max_length2(good, N, 2) / 2) + 2) << "||";
+	cout << good[good_st-1].surname << " ";
+	cout << good[good_st - 1].name << " ";
+	cout << good[good_st - 1].dad_name << setw(get_max_length2(good, N, 1) - good[good_st - 1].surname.length() - good[good_st - 1].name.length() - good[good_st - 1].dad_name.length()) << "||";
+	cout << setw(7) << good[good_st - 1].average;
 	cout << setw(3) << "||" << endl;
-	cout << setfill('=') << setw(get_max_length(students, N, 1) + get_max_length(students, N, 2) + 20) << "=" << endl<<""<<setfill(' ');
+	cout << setfill('=') << setw(get_max_length2(good, N, 1) + get_max_length2(good, N, 2) + 20) << "=" << endl<<""<<setfill(' ');
 }
 
 void table3(int nums_of_gr, group_stats groups[]) {
@@ -299,15 +350,12 @@ int main(int argc, char* argv[])
 		}
 	}
 	if (bad != N) {
-		double* averages;
-		averages = new double[good_st];
-		for (int i = 0; i < good_st; i++) {
-			averages[i] = average_mark(good[i].marks, marks);
-		}
-		sort_average(good, averages, good_st);
-		if (is_human) table2(good, good_st, averages, N);
-		else output_students2(good, good_st, averages);
-		delete[] averages;
+		good_stud* good_s = new good_stud[good_st];
+		student_to_good(good_st, good, good_s);
+		sort_average(good_s, good_st);
+		if (is_human) table2(good_s, good_st, N);
+		else output_students2(good_s, good_st);
+		delete[] good_s;
 	}
 	else {
 		if (is_human) cout << "Студентов с баллом выше 4.0 нет." << endl;
